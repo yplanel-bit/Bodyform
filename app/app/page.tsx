@@ -16,13 +16,22 @@ const PHRASES = [
 export default function SplashPage() {
   const router = useRouter();
   const [phrase] = useState(() => PHRASES[Math.floor(Math.random() * PHRASES.length)]);
-  const [visible, setVisible] = useState(false);
+  const [phase, setPhase] = useState<"video" | "main">("video");
+  const [videoVisible, setVideoVisible] = useState(false);
+  const [mainVisible, setMainVisible] = useState(false);
 
   useEffect(() => {
-    // Fade in
-    const t = setTimeout(() => setVisible(true), 100);
+    const t = setTimeout(() => setVideoVisible(true), 100);
     return () => clearTimeout(t);
   }, []);
+
+  const goToMain = () => {
+    setVideoVisible(false);
+    setTimeout(() => {
+      setPhase("main");
+      setTimeout(() => setMainVisible(true), 100);
+    }, 500);
+  };
 
   const handleStart = () => {
     if (isOnboardingDone()) {
@@ -31,6 +40,31 @@ export default function SplashPage() {
       router.push("/onboarding");
     }
   };
+
+  if (phase === "video") {
+    return (
+      <main
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "#080808", cursor: "pointer" }}
+        onClick={goToMain}
+      >
+        <video
+          src="/logo.mp4"
+          autoPlay
+          muted
+          playsInline
+          onEnded={goToMain}
+          style={{
+            width: "min(360px, 90vw)",
+            height: "min(360px, 90vw)",
+            objectFit: "contain",
+            opacity: videoVisible ? 1 : 0,
+            transition: "opacity 0.5s ease",
+          }}
+        />
+      </main>
+    );
+  }
 
   return (
     <main
@@ -56,8 +90,8 @@ export default function SplashPage() {
       <div
         className="flex flex-col items-center gap-10 w-full max-w-sm transition-all duration-700"
         style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(20px)",
+          opacity: mainVisible ? 1 : 0,
+          transform: mainVisible ? "translateY(0)" : "translateY(20px)",
         }}
       >
         {/* Logo */}
