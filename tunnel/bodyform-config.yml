@@ -1,0 +1,22 @@
+# ============================================================
+# Cloudflare Tunnel — Bodyform
+# Ce fichier est généré par setup-tunnel.sh
+# Remplace <TUNNEL_ID> et <TON_DOMAINE> par tes valeurs réelles
+# ============================================================
+
+tunnel: <TUNNEL_ID>
+credentials-file: /home/raspyan/.cloudflared/<TUNNEL_ID>.json
+
+# Sécurité :
+#   - Aucun port n'est ouvert sur ta box Internet
+#   - L'app écoute uniquement sur localhost:2905 (non accessible de l'extérieur)
+#   - Tout le trafic passe par le réseau chiffré de Cloudflare (HTTPS/TLS)
+#   - Cloudflare agit comme proxy et WAF devant ton application
+
+ingress:
+  - hostname: bodyform.<TON_DOMAINE>
+    service: http://localhost:2905
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: false
+  - service: http_status:404
