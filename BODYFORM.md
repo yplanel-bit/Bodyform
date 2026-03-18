@@ -130,7 +130,7 @@ npm start
 > - `npm run build` prépare l'application pour la production (comme emballer un colis)
 > - `npm start` démarre l'application
 
-L'application tourne maintenant sur un port local (par exemple le port `3000`).
+L'application tourne maintenant sur le port `2905`.
 
 ---
 
@@ -205,7 +205,7 @@ credentials-file: /home/utilisateur/.cloudflared/<identifiant-du-tunnel>.json
 
 ingress:
   - hostname: bodyform.ton-domaine.com
-    service: http://localhost:3000
+    service: http://localhost:2905
   - service: http_status:404
 ```
 
@@ -235,7 +235,7 @@ pm2 save
 
 ### Étape 9 — Vérifier que tout fonctionne
 
-1. Depuis ton réseau local : ouvre `http://192.168.1.144:3000` dans ton navigateur
+1. Depuis ton réseau local : ouvre `http://192.168.1.144:2905` dans ton navigateur
 2. Depuis l'extérieur (4G ou autre réseau) : ouvre `https://bodyform.ton-domaine.com`
 
 ---
