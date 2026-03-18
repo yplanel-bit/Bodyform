@@ -1,8 +1,9 @@
 #!/bin/bash
 # ============================================================
 # deploy.sh — Déploiement Bodyform sur Raspberry Pi
+# Le Pi clone/pull directement depuis GitHub (pas de rsync)
 # Usage : bash deploy.sh <utilisateur> [<chemin_cle_ssh>]
-# Exemple : bash deploy.sh pi ~/.ssh/id_rsa
+# Exemple : bash deploy.sh raspyan
 # ============================================================
 
 set -e
@@ -11,6 +12,8 @@ PI_USER="${1:-raspyan}"
 PI_HOST="192.168.1.144"
 APP_PORT="2905"
 REMOTE_DIR="/home/${PI_USER}/apps/Bodyform"
+REPO_URL="https://github.com/yplanel-bit/Bodyform.git"
+BRANCH="claude/create-bodyform-project-uKYpR"
 SSH_KEY="${2:-}"
 
 SSH_OPTS="-o StrictHostKeyChecking=accept-new"
@@ -23,13 +26,21 @@ echo "  Destination : ${PI_USER}@${PI_HOST}:${REMOTE_DIR}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# ── 1. Copie des fichiers ──────────────────────────────────
-echo "[1/5] Copie des fichiers vers le Pi..."
-ssh $SSH_OPTS ${PI_USER}@${PI_HOST} "mkdir -p ${REMOTE_DIR}"
-rsync -avz --exclude 'node_modules' --exclude '.git' \
-  $SSH_OPTS \
-  -e "ssh $SSH_OPTS" \
-  ./app/ ${PI_USER}@${PI_HOST}:${REMOTE_DIR}/app/
+# ── 1. Clone ou pull depuis GitHub ────────────────────────
+echo "[1/5] Récupération du code depuis GitHub..."
+ssh $SSH_OPTS ${PI_USER}@${PI_HOST} "
+  if [ -d '${REMOTE_DIR}/.git' ]; then
+    echo '  Mise à jour du repo existant...'
+    cd ${REMOTE_DIR}
+    git fetch origin
+    git checkout ${BRANCH}
+    git pull origin ${BRANCH}
+  else
+    echo '  Clone initial...'
+    mkdir -p \$(dirname ${REMOTE_DIR})
+    git clone -b ${BRANCH} ${REPO_URL} ${REMOTE_DIR}
+  fi
+"
 
 # ── 2. Installation + build sur le Pi ─────────────────────
 echo ""
