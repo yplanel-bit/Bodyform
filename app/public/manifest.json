@@ -1,0 +1,14 @@
+{
+  "name": "Bodyform — Coach Callisthénie",
+  "short_name": "Bodyform",
+  "description": "Ton coach de callisthénie personnalisé",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/logo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
