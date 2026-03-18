@@ -52,7 +52,7 @@ export default function HomePage() {
               {profile?.name || "Champion"} 💪
             </h1>
           </div>
-          <BodyformLogo size="sm" />
+          <BodyformLogo size="sm" src="/logo.mp4" />
         </div>
 
         {/* Phrase motivante */}

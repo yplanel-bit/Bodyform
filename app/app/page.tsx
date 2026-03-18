@@ -62,7 +62,7 @@ export default function SplashPage() {
       >
         {/* Logo */}
         <div className="flex flex-col items-center gap-1">
-          <BodyformLogo size="xl" animated />
+          <BodyformLogo size="xl" animated src="/logo.mp4" />
           <p className="text-xs text-green-400/60 tracking-widest uppercase mt-2">
             Coach Callisthénie
           </p>

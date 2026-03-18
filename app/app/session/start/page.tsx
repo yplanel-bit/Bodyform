@@ -55,7 +55,7 @@ function PreSessionForm() {
           <h1 className="text-2xl font-bold text-white">
             {isSurprise ? "🎲 Session Surprise" : "Configurer la session"}
           </h1>
-          <BodyformLogo size="sm" />
+          <BodyformLogo size="sm" src="/logo.mp4" />
         </div>
 
         {/* Fatigue du jour */}

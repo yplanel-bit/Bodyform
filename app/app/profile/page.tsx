@@ -71,7 +71,7 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold text-white">Mon Profil</h1>
             <p className="text-white/40 text-sm">Modifie tes informations à tout moment</p>
           </div>
-          <BodyformLogo size="sm" />
+          <BodyformLogo size="sm" src="/logo.mp4" />
         </div>
 
         {/* Identity */}

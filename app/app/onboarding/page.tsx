@@ -76,7 +76,7 @@ export default function OnboardingPage() {
             <ChevronLeft size={20} color="white" />
           </button>
         ) : <div />}
-        <BodyformLogo size="sm" />
+        <BodyformLogo size="sm" src="/logo.mp4" />
         <span className="text-sm text-white/40">{step + 1}/{STEPS.length}</span>
       </div>
 
