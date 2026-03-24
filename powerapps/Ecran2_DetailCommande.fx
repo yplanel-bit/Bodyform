@@ -1,22 +1,12 @@
 // ============================================================
-// ÉCRAN 2 — DÉTAIL COMMANDE
-// Fichier : Ecran2_DetailCommande.fx
-// ============================================================
-// Nommage des contrôles recommandé :
-//   btnRetour2           → bouton retour vers Écran 1
-//   lblTitreEcran2       → titre de l'écran
-//   galCommandesDetail   → galerie commandes client (gauche)
-//   galReferences        → galerie références de la commande sélectionnée (droite)
-//   panneauDroite2       → zone droite (visible si commande sélectionnée)
-//   btnBonLivraison      → bouton "Bon de livraison"
+// ÉCRAN 2 — DÉTAIL COMMANDE (syntaxe FR)
 // ============================================================
 
 
 // ─────────────────────────────────────────────
 // ONVISIBLE de l'écran
 // ─────────────────────────────────────────────
-// Ré-initialise la référence sélectionnée à l'arrivée sur cet écran
-Set(varReferenceSelectionnee, Blank())
+Définir(varReferenceSelectionnee; Vide())
 
 
 // ─────────────────────────────────────────────
@@ -25,7 +15,7 @@ Set(varReferenceSelectionnee, Blank())
 // Text
 "← Retour"
 // OnSelect
-Navigate(Ecran1_Accueil, ScreenTransition.Back)
+Naviguer(Ecran1_Accueil; TransitionÉcran.Précédent)
 
 
 // ─────────────────────────────────────────────
@@ -33,10 +23,6 @@ Navigate(Ecran1_Accueil, ScreenTransition.Back)
 // ─────────────────────────────────────────────
 // Text
 varClientSelectionne.Title & " — Commandes"
-// FontSize
-20
-// FontWeight
-FontWeight.Bold
 
 
 // ─────────────────────────────────────────────
@@ -44,93 +30,73 @@ FontWeight.Bold
 // ─────────────────────────────────────────────
 
 // Items
-Sort(
-    Filter(colCommandes, Client.Id = varClientSelectionne.ID),
-    DateLivraison,
-    SortOrder.Ascending
+Trier(
+    Filtrer(colCommandes; Client.Id = varClientSelectionne.ID);
+    DateLivraison;
+    OrdreTri.Croissant
 )
-
-// Hauteur du template
-100
 
 // Rectangle sélection active — Fill
-If(ThisItem.ID = varCommandeSelectionnee.ID, RGBA(255,255,255,0.18), Transparent)
+Si(CetElément.ID = varCommandeSelectionnee.ID; RVBA(255; 255; 255; 0,18); Transparent)
 
-// Label numéro commande
-// Text
-ThisItem.Title
-// FontWeight
-FontWeight.Semibold
-// FontSize
-15
+// Label numéro commande — Text
+CetElément.Title
 
-// Label date livraison
-// Text
-"Livraison : " & Text(ThisItem.DateLivraison, "[$-fr-FR]dd/mm/yyyy")
-// FontSize
-12
+// Label date livraison — Text
+"Livraison : " & Texte(CetElément.DateLivraison; "[$-fr-FR]jj/mm/aaaa")
 
 // Badge statut — Fill
-Switch(
-    ThisItem.Statut.Value,
-    "Complète",     RGBA(0,  200, 100, 1),
-    "En cours",     RGBA(255,165,   0, 1),
-    "Pas commencé", RGBA(200,  50,  50, 1),
-                    RGBA(150, 150, 150, 1)
+Basculer(
+    CetElément.Statut.Value;
+    "Complète";     RVBA(0;   200; 100; 1);
+    "En cours";     RVBA(255; 165;   0; 1);
+    "Pas commencé"; RVBA(200;  50;  50; 1);
+                    RVBA(150; 150; 150; 1)
 )
 // Badge statut — Text
-ThisItem.Statut.Value
+CetElément.Statut.Value
 
-// Barre progression — Fond — Width
-Parent.TemplateWidth - 24
-// Barre progression — Fond — Height
-8
 // Barre progression — Fond — Fill
-RGBA(200, 200, 200, 0.3)
+RVBA(200; 200; 200; 0,3)
 
 // Barre progression — Remplie — Width
-(Parent.TemplateWidth - 24) * With(
+(Parent.TemplateWidth - 24) * Avec(
     {
-        att:  Sum(Filter(colPieces,   Commande.Id = ThisItem.ID), QuantiteAttendue),
-        pret: Sum(Filter(colPalettes, Commande.Id = ThisItem.ID), QuantitePieces)
-    },
-    If(att > 0, pret / att, 0)
+        att:  Somme(Filtrer(colPieces;   Commande.Id = CetElément.ID); QuantiteAttendue);
+        pret: Somme(Filtrer(colPalettes; Commande.Id = CetElément.ID); QuantitePieces)
+    };
+    Si(att > 0; pret / att; 0)
 )
 // Barre progression — Remplie — Fill
-RGBA(0, 180, 120, 1)
+RVBA(0; 180; 120; 1)
 
-// Label pourcentage progression
-// Text
-With(
+// Label pourcentage progression — Text
+Avec(
     {
-        att:  Sum(Filter(colPieces,   Commande.Id = ThisItem.ID), QuantiteAttendue),
-        pret: Sum(Filter(colPalettes, Commande.Id = ThisItem.ID), QuantitePieces)
-    },
-    Text(If(att > 0, pret / att * 100, 0), "[$-fr-FR]0") & " %  (" &
-    Text(pret, "[$-fr-FR]#,##0") & " / " & Text(att, "[$-fr-FR]#,##0") & ")"
+        att:  Somme(Filtrer(colPieces;   Commande.Id = CetElément.ID); QuantiteAttendue);
+        pret: Somme(Filtrer(colPalettes; Commande.Id = CetElément.ID); QuantitePieces)
+    };
+    Texte(Si(att > 0; pret / att * 100; 0); "[$-fr-FR]0") & " %  (" &
+    Texte(pret; "[$-fr-FR]# ##0") & " / " & Texte(att; "[$-fr-FR]# ##0") & ")"
 )
 
-// OnSelect — sélectionne la commande (pas de navigation, affichage à droite)
-Set(varCommandeSelectionnee, ThisItem);
-Set(varReferenceSelectionnee, Blank())
+// OnSelect
+Définir(varCommandeSelectionnee; CetElément);
+Définir(varReferenceSelectionnee; Vide())
 
 
 // ─────────────────────────────────────────────
 // PANNEAU DROITE — Visible
 // ─────────────────────────────────────────────
-Visible : !IsBlank(varCommandeSelectionnee)
+Non(EstVide(varCommandeSelectionnee))
 
 
 // ─────────────────────────────────────────────
-// LABEL TITRE COMMANDE SÉLECTIONNÉE
+// LABEL COMMANDE SÉLECTIONNÉE
 // ─────────────────────────────────────────────
 // Text
 "Commande : " & varCommandeSelectionnee.Title & "  —  Livraison : " &
-Text(varCommandeSelectionnee.DateLivraison, "[$-fr-FR]dd/mm/yyyy")
-// FontSize
-15
-// FontWeight
-FontWeight.Semibold
+Texte(varCommandeSelectionnee.DateLivraison; "[$-fr-FR]jj/mm/aaaa")
 
 
 // ─────────────────────────────────────────────
@@ -138,78 +104,59 @@ FontWeight.Semibold
 // ─────────────────────────────────────────────
 
 // Items
-Sort(
-    Filter(colPieces, Commande.Id = varCommandeSelectionnee.ID),
-    Title,
-    SortOrder.Ascending
+Trier(
+    Filtrer(colPieces; Commande.Id = varCommandeSelectionnee.ID);
+    Title;
+    OrdreTri.Croissant
 )
 
-// Hauteur du template
-110
+// Label référence — Text
+CetElément.Title
 
-// Rectangle fond — Fill
-RGBA(255, 255, 255, 0.05)
+// Label quantité attendue — Text
+"Attendu : " & Texte(CetElément.QuantiteAttendue; "[$-fr-FR]# ##0") & " pcs"
 
-// Label référence
-// Text
-ThisItem.Title
-// FontSize
-14
-// FontWeight
-FontWeight.Semibold
-
-// Label quantité attendue
-// Text
-"Attendu : " & Text(ThisItem.QuantiteAttendue, "[$-fr-FR]#,##0") & " pcs"
-
-// Label pièces prêtes
-// Text
-"Prêtes : " & Text(
-    Sum(
-        Filter(colPalettes,
-            Commande.Id = varCommandeSelectionnee.ID,
-            Reference   = ThisItem.Title
-        ),
+// Label pièces prêtes — Text
+"Prêtes : " & Texte(
+    Somme(
+        Filtrer(colPalettes;
+            Commande.Id = varCommandeSelectionnee.ID;
+            Reference   = CetElément.Title
+        );
         QuantitePieces
-    ),
-    "[$-fr-FR]#,##0"
+    );
+    "[$-fr-FR]# ##0"
 ) & " pcs"
 
-// Label cartons
-// Text
-"Cartons : " & Text(ThisItem.NombreCartons, "[$-fr-FR]#,##0")
+// Label cartons — Text
+"Cartons : " & Texte(CetElément.NombreCartons; "[$-fr-FR]# ##0")
 
-// Label poids
-// Text
-"Poids : " & Text(ThisItem.Poids, "[$-fr-FR]0.00") & " kg"
+// Label poids — Text
+"Poids : " & Texte(CetElément.Poids; "[$-fr-FR]0,00") & " kg"
 
-// Barre progression référence — Fond — Width
-Parent.TemplateWidth - 24
-// Barre progression référence — Fond — Height
-6
 // Barre progression référence — Fond — Fill
-RGBA(200, 200, 200, 0.3)
+RVBA(200; 200; 200; 0,3)
 
 // Barre progression référence — Remplie — Width
-(Parent.TemplateWidth - 24) * With(
+(Parent.TemplateWidth - 24) * Avec(
     {
-        att:  ThisItem.QuantiteAttendue,
-        pret: Sum(
-            Filter(colPalettes,
-                Commande.Id = varCommandeSelectionnee.ID,
-                Reference   = ThisItem.Title
-            ),
+        att:  CetElément.QuantiteAttendue;
+        pret: Somme(
+            Filtrer(colPalettes;
+                Commande.Id = varCommandeSelectionnee.ID;
+                Reference   = CetElément.Title
+            );
             QuantitePieces
         )
-    },
-    If(att > 0, pret / att, 0)
+    };
+    Si(att > 0; pret / att; 0)
 )
 // Barre progression référence — Remplie — Fill
-RGBA(255, 140, 0, 1)
+RVBA(255; 140; 0; 1)
 
-// OnSelect — navigate vers détail référence
-Set(varReferenceSelectionnee, ThisItem);
-Navigate(Ecran3_DetailReference, ScreenTransition.Fade)
+// OnSelect
+Définir(varReferenceSelectionnee; CetElément);
+Naviguer(Ecran3_DetailReference; TransitionÉcran.Fondu)
 
 
 // ─────────────────────────────────────────────
@@ -218,12 +165,10 @@ Navigate(Ecran3_DetailReference, ScreenTransition.Fade)
 // Text
 "📄 Bon de livraison"
 // Visible
-!IsBlank(varCommandeSelectionnee)
+Non(EstVide(varCommandeSelectionnee))
 // OnSelect
-Navigate(Ecran4_BonDeLivraison, ScreenTransition.Fade)
+Naviguer(Ecran4_BonDeLivraison; TransitionÉcran.Fondu)
 // Fill
-RGBA(0, 120, 210, 1)
+RVBA(0; 120; 210; 1)
 // Color (texte)
-White
-// BorderRadius
-8
+Blanc

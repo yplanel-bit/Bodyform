@@ -1,29 +1,28 @@
 // ============================================================
-// ÉCRAN 1 — ACCUEIL
-// Fichier : Ecran1_Accueil.fx
+// ÉCRAN 1 — ACCUEIL (syntaxe FR)
 // ============================================================
-// Nommage des contrôles recommandé :
-//   galClients           → galerie des clients (gauche)
-//   galCommandesClient   → galerie des commandes du client sélectionné (droite)
-//   rectProgGlobalFond   → rectangle fond barre progression globale
-//   rectProgGlobalRempli → rectangle rempli barre progression globale
-//   lblPourcentageGlobal → label % global
-//   lblTitreClient       → label titre client sélectionné
-//   panneauDroite        → groupe ou rectangle délimitant la zone droite
+// NOTE IMPORTANTE — Syntaxe PowerApps FR :
+//   • Séparateur de paramètres : point-virgule  (;)
+//   • Séparateur décimal       : virgule        (0,3)
+//   • Fonctions traduites      : Filtrer / Trier / Somme / Si / EstVide / Vide /
+//                                Avec / Définir / Naviguer / Collecter /
+//                                EffacerCollecte / Simultané / Texte / Maintenant
+//   • Énumérations             : OrdreTri.Croissant · TransitionÉcran.Fondu
 // ============================================================
 
 
 // ─────────────────────────────────────────────
 // APP.OnStart
 // ─────────────────────────────────────────────
-// Chargement des données et initialisation des variables
-Collect(colClients,   Clients);
-Collect(colCommandes, Commandes);
-Collect(colPieces,    Pieces);
-Collect(colPalettes,  Palettes);
-Set(varClientSelectionne,    Blank());
-Set(varCommandeSelectionnee, Blank());
-Set(varReferenceSelectionnee, Blank())
+Simultané(
+    Collecter(colClients;   Clients);
+    Collecter(colCommandes; Commandes);
+    Collecter(colPieces;    Pieces);
+    Collecter(colPalettes;  Palettes)
+);
+Définir(varClientSelectionne;     Vide());
+Définir(varCommandeSelectionnee;  Vide());
+Définir(varReferenceSelectionnee; Vide())
 
 
 // ─────────────────────────────────────────────
@@ -31,89 +30,60 @@ Set(varReferenceSelectionnee, Blank())
 // ─────────────────────────────────────────────
 
 // Items
-Sort(colClients, Title, SortOrder.Ascending)
+Trier(colClients; Title; OrdreTri.Croissant)
 
-// Hauteur du template
-72
+// Rectangle de sélection active — Fill
+Si(CetElément.ID = varClientSelectionne.ID; RVBA(255; 255; 255; 0,15); Transparent)
 
-// Rectangle de fond (sélection active)
-// Fill
-If(ThisItem.ID = varClientSelectionne.ID, RGBA(255, 255, 255, 0.15), Transparent)
-
-// Label nom du client
-// Text
-ThisItem.Title
-// FontSize
-16
-// FontWeight
-FontWeight.Semibold
-
-// Séparateur bas de template
-// Fill
-RGBA(255, 255, 255, 0.08)
+// Label nom du client — Text
+CetElément.Title
 
 // OnSelect de la galerie
-Set(varClientSelectionne, ThisItem);
-Set(varCommandeSelectionnee, Blank());
-Set(varReferenceSelectionnee, Blank())
+Définir(varClientSelectionne; CetElément);
+Définir(varCommandeSelectionnee; Vide());
+Définir(varReferenceSelectionnee; Vide())
 
 
 // ─────────────────────────────────────────────
 // PANNEAU DROITE — Visible
 // ─────────────────────────────────────────────
-Visible : !IsBlank(varClientSelectionne)
+Non(EstVide(varClientSelectionne))
 
 
 // ─────────────────────────────────────────────
-// LABEL TITRE CLIENT SÉLECTIONNÉ : lblTitreClient
+// LABEL TITRE CLIENT SÉLECTIONNÉ
 // ─────────────────────────────────────────────
 // Text
 varClientSelectionne.Title
-// FontSize
-22
-// FontWeight
-FontWeight.Bold
 
 
 // ─────────────────────────────────────────────
 // BARRE DE PROGRESSION GLOBALE CLIENT
 // ─────────────────────────────────────────────
 
-// Variable locale pour éviter la duplication de calcul
-// (à placer dans le OnVisible de l'écran ou en variable)
-// OnVisible de Ecran1_Accueil :
-With(
+// OnVisible de l'écran (recalcul à chaque affichage) :
+Avec(
     {
-        att:  Sum(Filter(colPieces,   Commande.Client.Id = varClientSelectionne.ID), QuantiteAttendue),
-        pret: Sum(Filter(colPalettes, Commande.Client.Id = varClientSelectionne.ID), QuantitePieces)
-    },
-    Set(varProgGlobalClient, If(att > 0, pret / att, 0));
-    Set(varProgGlobalClientAtt,  att);
-    Set(varProgGlobalClientPret, pret)
+        att:  Somme(Filtrer(colPieces;   Commande.Client.Id = varClientSelectionne.ID); QuantiteAttendue);
+        pret: Somme(Filtrer(colPalettes; Commande.Client.Id = varClientSelectionne.ID); QuantitePieces)
+    };
+    Définir(varProgGlobalClient;    Si(att > 0; pret / att; 0));
+    Définir(varProgGlobalClientAtt;  att);
+    Définir(varProgGlobalClientPret; pret)
 )
 
-// rectProgGlobalFond — Width
-panneauDroite.Width - 48
-// rectProgGlobalFond — Height
-14
 // rectProgGlobalFond — Fill
-RGBA(200, 200, 200, 0.3)
-// rectProgGlobalFond — RadiusTopLeft / RadiusTopRight / etc.
-7
+RVBA(200; 200; 200; 0,3)
 
 // rectProgGlobalRempli — Width
 (panneauDroite.Width - 48) * varProgGlobalClient
-// rectProgGlobalRempli — Height
-14
 // rectProgGlobalRempli — Fill
-RGBA(0, 120, 210, 1)
-// rectProgGlobalRempli — RadiusTopLeft / etc.
-7
+RVBA(0; 120; 210; 1)
 
 // lblPourcentageGlobal — Text
-Text(varProgGlobalClient * 100, "[$-fr-FR]0.0") & " %  (" &
-Text(varProgGlobalClientPret, "[$-fr-FR]#,##0") & " / " &
-Text(varProgGlobalClientAtt,  "[$-fr-FR]#,##0") & " pièces)"
+Texte(varProgGlobalClient * 100; "[$-fr-FR]0,0") & " %  (" &
+Texte(varProgGlobalClientPret; "[$-fr-FR]# ##0") & " / " &
+Texte(varProgGlobalClientAtt;  "[$-fr-FR]# ##0") & " pièces)"
 
 
 // ─────────────────────────────────────────────
@@ -121,68 +91,56 @@ Text(varProgGlobalClientAtt,  "[$-fr-FR]#,##0") & " pièces)"
 // ─────────────────────────────────────────────
 
 // Items
-Sort(
-    Filter(colCommandes, Client.Id = varClientSelectionne.ID),
-    DateLivraison,
-    SortOrder.Ascending
+Trier(
+    Filtrer(colCommandes; Client.Id = varClientSelectionne.ID);
+    DateLivraison;
+    OrdreTri.Croissant
 )
 
-// Hauteur du template
-90
+// Label numéro de commande — Text
+CetElément.Title
 
-// Label numéro de commande
-// Text
-ThisItem.Title
-// FontWeight
-FontWeight.Semibold
+// Label date de livraison — Text
+"Livraison : " & Texte(CetElément.DateLivraison; "[$-fr-FR]jj/mm/aaaa")
 
-// Label date de livraison
-// Text
-"Livraison : " & Text(ThisItem.DateLivraison, "[$-fr-FR]dd/mm/yyyy")
-
-// Badge statut — Fill (couleur de fond)
-Switch(
-    ThisItem.Statut.Value,
-    "Complète",       RGBA(0,  200, 100, 1),
-    "En cours",       RGBA(255,165,   0, 1),
-    "Pas commencé",   RGBA(200,  50,  50, 1),
-                      RGBA(150, 150, 150, 1)
+// Badge statut — Fill
+Basculer(
+    CetElément.Statut.Value;
+    "Complète";       RVBA(0;   200; 100; 1);
+    "En cours";       RVBA(255; 165;   0; 1);
+    "Pas commencé";   RVBA(200;  50;  50; 1);
+                      RVBA(150; 150; 150; 1)
 )
 
 // Badge statut — Text
-ThisItem.Statut.Value
+CetElément.Statut.Value
 
-// Barre progression commande — Fond — Width
-Parent.TemplateWidth - 24
-// Barre progression commande — Fond — Height
-6
 // Barre progression commande — Fond — Fill
-RGBA(200, 200, 200, 0.3)
+RVBA(200; 200; 200; 0,3)
 
 // Barre progression commande — Remplie — Width
-(Parent.TemplateWidth - 24) * With(
+(Parent.TemplateWidth - 24) * Avec(
     {
-        att:  Sum(Filter(colPieces,   Commande.Id = ThisItem.ID), QuantiteAttendue),
-        pret: Sum(Filter(colPalettes, Commande.Id = ThisItem.ID), QuantitePieces)
-    },
-    If(att > 0, pret / att, 0)
+        att:  Somme(Filtrer(colPieces;   Commande.Id = CetElément.ID); QuantiteAttendue);
+        pret: Somme(Filtrer(colPalettes; Commande.Id = CetElément.ID); QuantitePieces)
+    };
+    Si(att > 0; pret / att; 0)
 )
 // Barre progression commande — Remplie — Fill
-RGBA(0, 180, 120, 1)
+RVBA(0; 180; 120; 1)
 
-// Label % commande
-// Text
-Text(
-    With(
+// Label % commande — Text
+Texte(
+    Avec(
         {
-            att:  Sum(Filter(colPieces,   Commande.Id = ThisItem.ID), QuantiteAttendue),
-            pret: Sum(Filter(colPalettes, Commande.Id = ThisItem.ID), QuantitePieces)
-        },
-        If(att > 0, pret / att * 100, 0)
-    ),
+            att:  Somme(Filtrer(colPieces;   Commande.Id = CetElément.ID); QuantiteAttendue);
+            pret: Somme(Filtrer(colPalettes; Commande.Id = CetElément.ID); QuantitePieces)
+        };
+        Si(att > 0; pret / att * 100; 0)
+    );
     "[$-fr-FR]0"
 ) & " %"
 
 // OnSelect de galCommandesClient
-Set(varCommandeSelectionnee, ThisItem);
-Navigate(Ecran2_DetailCommande, ScreenTransition.Fade)
+Définir(varCommandeSelectionnee; CetElément);
+Naviguer(Ecran2_DetailCommande; TransitionÉcran.Fondu)

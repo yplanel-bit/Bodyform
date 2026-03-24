@@ -45,6 +45,56 @@ Application Canvas PowerApps connectée à SharePoint pour le suivi de préparat
 
 ---
 
+## Syntaxe PowerApps FR — Règles essentielles
+
+| Règle | Anglais | **Français** |
+|---|---|---|
+| Séparateur de paramètres | `,` | **`;`** |
+| Séparateur décimal | `0.3` | **`0,3`** |
+| Booléens | `true` / `false` | **`vrai`** / **`faux`** |
+| Couleur | `RGBA(...)` | **`RVBA(...)`** |
+
+### Traduction des fonctions principales
+
+| Anglais | **Français** |
+|---|---|
+| `Filter(...)` | **`Filtrer(...)`** |
+| `Sort(...)` | **`Trier(...)`** |
+| `Sum(...)` | **`Somme(...)`** |
+| `If(...)` | **`Si(...)`** |
+| `IsBlank(...)` | **`EstVide(...)`** |
+| `Blank()` | **`Vide()`** |
+| `With(...)` | **`Avec(...)`** |
+| `Set(...)` | **`Définir(...)`** |
+| `Navigate(...)` | **`Naviguer(...)`** |
+| `Collect(...)` | **`Collecter(...)`** |
+| `ClearCollect(...)` | **`EffacerCollecte(...)`** |
+| `Concurrent(...)` | **`Simultané(...)`** |
+| `ForAll(...)` | **`PourTous(...)`** |
+| `Text(...)` | **`Texte(...)`** |
+| `Now()` | **`Maintenant()`** |
+| `Switch(...)` | **`Basculer(...)`** |
+| `Notify(...)` | **`Notifier(...)`** |
+| `Print()` | **`Imprimer()`** |
+| `CountRows(...)` | **`NbLignes(...)`** |
+| `IsEven(...)` | **`EstPair(...)`** |
+| `Not(...)` | **`Non(...)`** |
+| `LookUp(...)` | **`RechercherV(...)`** |
+
+### Traduction des énumérations
+
+| Anglais | **Français** |
+|---|---|
+| `SortOrder.Ascending` | **`OrdreTri.Croissant`** |
+| `SortOrder.Descending` | **`OrdreTri.Décroissant`** |
+| `ScreenTransition.Fade` | **`TransitionÉcran.Fondu`** |
+| `ScreenTransition.Back` | **`TransitionÉcran.Précédent`** |
+| `NotificationType.Success` | **`TypeNotification.Succès`** |
+| `White` | **`Blanc`** |
+| `Transparent` | **`Transparent`** |
+
+---
+
 ## Architecture des écrans
 
 ```
